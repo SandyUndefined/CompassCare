@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import logoPath from "@assets/compasscare-logo-original_1770820871822.png";
+import logoPath from "@assets/5F3DC2E5-79B3-43EB-9C3A-85C86DF1FCA4_1770903947703.png";
 
 interface CompassLogoProps {
   className?: string;
