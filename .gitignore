@@ -6,3 +6,8 @@ vite.config.ts.*
 *.tar.gz
 .env
 .local
+.env
+.config/
+.local/
+node_modules/
+.DS_Store
