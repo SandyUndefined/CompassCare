@@ -11,3 +11,9 @@ vite.config.ts.*
 .local/
 node_modules/
 .DS_Store
+
+.config/
+.local/
+.env
+node_modules/
+.DS_Store
