@@ -18,6 +18,7 @@ import 'package:compasscare_flutter/features/medications/data/datasources/medica
 import 'package:compasscare_flutter/features/medications/data/datasources/medication_remote_data_source.dart';
 import 'package:compasscare_flutter/features/medications/data/repositories/medications_repository_impl.dart';
 import 'package:compasscare_flutter/features/medications/domain/repositories/medications_repository.dart';
+import 'package:compasscare_flutter/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:compasscare_flutter/features/shopping/data/repositories/shopping_repository_impl.dart';
 import 'package:compasscare_flutter/features/shopping/domain/repositories/shopping_repository.dart';
 import 'package:compasscare_flutter/features/shell/presentation/cubit/shell_cubit.dart';
@@ -40,6 +41,8 @@ class CompassCareApp extends StatelessWidget {
     this.careTeamRepository,
     this.shoppingRepository,
     this.enableSplashScreen = true,
+    this.enableOnboardingScreen = true,
+    this.onOnboardingCompleted,
   });
 
   final AppConfig config;
@@ -51,6 +54,8 @@ class CompassCareApp extends StatelessWidget {
   final CareTeamRepository? careTeamRepository;
   final ShoppingRepository? shoppingRepository;
   final bool enableSplashScreen;
+  final bool enableOnboardingScreen;
+  final Future<void> Function()? onOnboardingCompleted;
 
   @override
   Widget build(BuildContext context) {
@@ -180,6 +185,9 @@ class CompassCareApp extends StatelessWidget {
             final isDark = themeState.themeMode == ThemeMode.dark;
             final shortestSide = MediaQuery.sizeOf(context).shortestSide;
             final splashLogoSize = (shortestSide * 0.38).clamp(120.0, 180.0);
+            final startupScreen = enableOnboardingScreen
+                ? OnboardingPage(onCompleted: onOnboardingCompleted)
+                : const AppShellPage();
             return MaterialApp(
               title: config.appName,
               debugShowCheckedModeBanner: false,
@@ -189,7 +197,7 @@ class CompassCareApp extends StatelessWidget {
               home: enableSplashScreen
                   ? SplashScreen.timer(
                       seconds: 2,
-                      navigateAfterSeconds: const AppShellPage(),
+                      navigateAfterSeconds: startupScreen,
                       image: Image.asset('assets/images/logo.png'),
                       photoSize: splashLogoSize,
                       backgroundColor: isDark
@@ -204,7 +212,7 @@ class CompassCareApp extends StatelessWidget {
                       ),
                       loadingText: const Text('Loading...'),
                     )
-                  : const AppShellPage(),
+                  : startupScreen,
             );
           },
         ),

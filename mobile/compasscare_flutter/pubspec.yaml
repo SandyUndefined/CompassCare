@@ -41,6 +41,8 @@ dependencies:
   path: ^1.9.1
   url_launcher: ^6.3.2
   splashscreen: ^2.0.0
+  introduction_screen: ^4.0.0
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

@@ -14,6 +14,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('shows onboarding and skip opens app shell', (
+    WidgetTester tester,
+  ) async {
+    var onboardingCompleted = false;
+
+    await tester.pumpWidget(
+      CompassCareApp(
+        config: const AppConfig(),
+        apiClient: ApiClient(baseUrl: const AppConfig().apiBaseUrl),
+        database: AppDatabase(),
+        medicationsRepository: _FakeMedicationsRepository(),
+        appointmentsRepository: _FakeAppointmentsRepository(),
+        documentsRepository: _FakeDocumentsRepository(),
+        careTeamRepository: _FakeCareTeamRepository(),
+        enableSplashScreen: false,
+        onOnboardingCompleted: () async {
+          onboardingCompleted = true;
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Welcome to CompassCare'), findsOneWidget);
+    expect(find.text('Skip'), findsOneWidget);
+
+    await tester.tap(find.text('Skip'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Medications'), findsWidgets);
+    expect(find.text('Shopping'), findsOneWidget);
+    expect(onboardingCompleted, isTrue);
+  });
+
   testWidgets('renders app shell tabs', (WidgetTester tester) async {
     await tester.pumpWidget(
       CompassCareApp(
@@ -25,6 +58,7 @@ void main() {
         documentsRepository: _FakeDocumentsRepository(),
         careTeamRepository: _FakeCareTeamRepository(),
         enableSplashScreen: false,
+        enableOnboardingScreen: false,
       ),
     );
     await tester.pumpAndSettle();
@@ -50,6 +84,7 @@ void main() {
         documentsRepository: _FakeDocumentsRepository(),
         careTeamRepository: _FakeCareTeamRepository(),
         enableSplashScreen: false,
+        enableOnboardingScreen: false,
       ),
     );
 
