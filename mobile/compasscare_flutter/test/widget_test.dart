@@ -10,6 +10,7 @@ import 'package:compasscare_flutter/features/documents/data/models/document_mode
 import 'package:compasscare_flutter/features/documents/domain/repositories/documents_repository.dart';
 import 'package:compasscare_flutter/features/medications/data/models/medication_model.dart';
 import 'package:compasscare_flutter/features/medications/domain/repositories/medications_repository.dart';
+import 'package:dot_navigation_bar/dot_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -43,7 +44,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Medications'), findsWidgets);
-    expect(find.text('Shopping'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(DotNavigationBar),
+        matching: find.byIcon(Icons.shopping_bag_outlined),
+      ),
+      findsOneWidget,
+    );
     expect(onboardingCompleted, isTrue);
   });
 
@@ -64,10 +71,41 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Medications'), findsWidgets);
-    expect(find.text('Appointments'), findsOneWidget);
-    expect(find.text('Documents'), findsOneWidget);
-    expect(find.text('Care Team'), findsOneWidget);
-    expect(find.text('Shopping'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(DotNavigationBar),
+        matching: find.byIcon(Icons.medication_outlined),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(DotNavigationBar),
+        matching: find.byIcon(Icons.calendar_month_outlined),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(DotNavigationBar),
+        matching: find.byIcon(Icons.folder_open_outlined),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(DotNavigationBar),
+        matching: find.byIcon(Icons.groups_outlined),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(DotNavigationBar),
+        matching: find.byIcon(Icons.shopping_bag_outlined),
+      ),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('header-team-avatar-1')), findsOneWidget);
   });
 
@@ -88,7 +126,12 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('Shopping'));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(DotNavigationBar),
+        matching: find.byIcon(Icons.shopping_bag_outlined),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Care Supplies & Medications'), findsOneWidget);
