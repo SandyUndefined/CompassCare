@@ -1,4 +1,4 @@
-package com.example.compasscare_flutter
+package com.sandy.compasscare
 
 import io.flutter.embedding.android.FlutterActivity
 

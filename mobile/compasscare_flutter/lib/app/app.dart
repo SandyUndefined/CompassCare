@@ -26,6 +26,7 @@ import 'package:compasscare_flutter/features/shell/presentation/pages/app_shell_
 import 'package:compasscare_flutter/features/theme/presentation/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:splashscreen/splashscreen.dart';
 
 class CompassCareApp extends StatelessWidget {
   const CompassCareApp({
@@ -38,6 +39,7 @@ class CompassCareApp extends StatelessWidget {
     this.documentsRepository,
     this.careTeamRepository,
     this.shoppingRepository,
+    this.enableSplashScreen = true,
   });
 
   final AppConfig config;
@@ -48,6 +50,7 @@ class CompassCareApp extends StatelessWidget {
   final DocumentsRepository? documentsRepository;
   final CareTeamRepository? careTeamRepository;
   final ShoppingRepository? shoppingRepository;
+  final bool enableSplashScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -174,13 +177,34 @@ class CompassCareApp extends StatelessWidget {
         ],
         child: BlocBuilder<ThemeCubit, ThemeState>(
           builder: (context, themeState) {
+            final isDark = themeState.themeMode == ThemeMode.dark;
+            final shortestSide = MediaQuery.sizeOf(context).shortestSide;
+            final splashLogoSize = (shortestSide * 0.38).clamp(120.0, 180.0);
             return MaterialApp(
               title: config.appName,
               debugShowCheckedModeBanner: false,
               theme: AppTheme.light(),
               darkTheme: AppTheme.dark(),
               themeMode: themeState.themeMode,
-              home: const AppShellPage(),
+              home: enableSplashScreen
+                  ? SplashScreen.timer(
+                      seconds: 2,
+                      navigateAfterSeconds: const AppShellPage(),
+                      image: Image.asset('logo.png'),
+                      photoSize: splashLogoSize,
+                      backgroundColor: isDark
+                          ? Colors.black
+                          : Theme.of(context).colorScheme.surface,
+                      loaderColor: isDark
+                          ? Colors.white
+                          : Theme.of(context).colorScheme.primary,
+                      title: Text(
+                        config.appName,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      loadingText: const Text('Loading...'),
+                    )
+                  : const AppShellPage(),
             );
           },
         ),

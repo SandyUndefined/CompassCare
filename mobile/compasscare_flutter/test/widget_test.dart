@@ -24,6 +24,7 @@ void main() {
         appointmentsRepository: _FakeAppointmentsRepository(),
         documentsRepository: _FakeDocumentsRepository(),
         careTeamRepository: _FakeCareTeamRepository(),
+        enableSplashScreen: false,
       ),
     );
     await tester.pumpAndSettle();
@@ -48,6 +49,7 @@ void main() {
         appointmentsRepository: _FakeAppointmentsRepository(),
         documentsRepository: _FakeDocumentsRepository(),
         careTeamRepository: _FakeCareTeamRepository(),
+        enableSplashScreen: false,
       ),
     );
 
