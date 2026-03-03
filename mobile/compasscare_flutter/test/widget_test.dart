@@ -1,9 +1,9 @@
 import 'package:compasscare_flutter/app/app.dart';
+import 'package:compasscare_flutter/core/config/app_config.dart';
 import 'package:compasscare_flutter/features/appointments/data/models/appointment_model.dart';
 import 'package:compasscare_flutter/features/appointments/domain/repositories/appointments_repository.dart';
 import 'package:compasscare_flutter/features/care_team/data/models/care_team_member_model.dart';
 import 'package:compasscare_flutter/features/care_team/domain/repositories/care_team_repository.dart';
-import 'package:compasscare_flutter/core/config/app_environment.dart';
 import 'package:compasscare_flutter/core/network/api_client.dart';
 import 'package:compasscare_flutter/core/storage/app_database.dart';
 import 'package:compasscare_flutter/features/documents/data/models/document_model.dart';

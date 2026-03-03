@@ -1,5 +1,5 @@
 import 'package:compasscare_flutter/app/theme/app_theme.dart';
-import 'package:compasscare_flutter/core/config/app_environment.dart';
+import 'package:compasscare_flutter/core/config/app_config.dart';
 import 'package:compasscare_flutter/core/network/api_client.dart';
 import 'package:compasscare_flutter/core/storage/app_database.dart';
 import 'package:compasscare_flutter/features/appointments/data/datasources/appointment_local_data_source.dart';
@@ -190,7 +190,7 @@ class CompassCareApp extends StatelessWidget {
                   ? SplashScreen.timer(
                       seconds: 2,
                       navigateAfterSeconds: const AppShellPage(),
-                      image: Image.asset('logo.png'),
+                      image: Image.asset('assets/images/logo.png'),
                       photoSize: splashLogoSize,
                       backgroundColor: isDark
                           ? Colors.black
