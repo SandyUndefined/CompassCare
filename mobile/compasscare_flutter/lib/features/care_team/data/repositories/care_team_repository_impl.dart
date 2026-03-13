@@ -1,3 +1,4 @@
+import 'package:compasscare_flutter/core/data/bundled_care_data.dart';
 import 'package:compasscare_flutter/features/care_team/data/datasources/care_team_local_data_source.dart';
 import 'package:compasscare_flutter/features/care_team/data/datasources/care_team_remote_data_source.dart';
 import 'package:compasscare_flutter/features/care_team/domain/repositories/care_team_repository.dart';
@@ -31,7 +32,13 @@ class CareTeamRepositoryImpl implements CareTeamRepository {
         );
       }
 
-      rethrow;
+      await _localDataSource.replaceCachedCareTeamMembers(
+        BundledCareData.careTeamMembers,
+      );
+      return const CareTeamFetchResult(
+        members: BundledCareData.careTeamMembers,
+        origin: CareTeamDataOrigin.cache,
+      );
     }
   }
 }

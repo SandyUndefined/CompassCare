@@ -1,3 +1,4 @@
+import 'package:compasscare_flutter/core/data/bundled_care_data.dart';
 import 'package:compasscare_flutter/features/appointments/data/datasources/appointment_local_data_source.dart';
 import 'package:compasscare_flutter/features/appointments/data/datasources/appointment_remote_data_source.dart';
 import 'package:compasscare_flutter/features/appointments/data/models/appointment_model.dart';
@@ -32,20 +33,44 @@ class AppointmentsRepositoryImpl implements AppointmentsRepository {
         );
       }
 
-      rethrow;
+      await _localDataSource.replaceCachedAppointments(
+        BundledCareData.appointments,
+      );
+      return const AppointmentFetchResult(
+        appointments: BundledCareData.appointments,
+        origin: AppointmentDataOrigin.cache,
+      );
     }
   }
 
   @override
   Future<AppointmentModel> addAppointment(CreateAppointmentInput input) async {
-    final created = await _remoteDataSource.addAppointment(input);
-    await _localDataSource.upsertCachedAppointment(created);
-    return created;
+    try {
+      final created = await _remoteDataSource.addAppointment(input);
+      await _localDataSource.upsertCachedAppointment(created);
+      return created;
+    } catch (_) {
+      final created = AppointmentModel(
+        id: await _localDataSource.nextLocalAppointmentId(),
+        type: input.type,
+        doctor: input.doctor,
+        date: input.date,
+        time: input.time,
+        location: input.location,
+        assignedTo: input.assignedTo,
+        notes: input.notes,
+      );
+      await _localDataSource.upsertCachedAppointment(created);
+      return created;
+    }
   }
 
   @override
   Future<void> removeAppointment(int id) async {
-    await _remoteDataSource.removeAppointment(id);
-    await _localDataSource.deleteCachedAppointment(id);
+    try {
+      await _remoteDataSource.removeAppointment(id);
+    } finally {
+      await _localDataSource.deleteCachedAppointment(id);
+    }
   }
 }

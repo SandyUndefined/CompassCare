@@ -1,3 +1,4 @@
+import 'package:compasscare_flutter/core/data/bundled_care_data.dart';
 import 'package:compasscare_flutter/features/medications/data/datasources/medication_local_data_source.dart';
 import 'package:compasscare_flutter/features/medications/data/datasources/medication_remote_data_source.dart';
 import 'package:compasscare_flutter/features/medications/data/models/medication_model.dart';
@@ -32,27 +33,76 @@ class MedicationsRepositoryImpl implements MedicationsRepository {
         );
       }
 
-      rethrow;
+      await _localDataSource.replaceCachedMedications(
+        BundledCareData.medications,
+      );
+      return const MedicationFetchResult(
+        medications: BundledCareData.medications,
+        origin: MedicationDataOrigin.cache,
+      );
     }
   }
 
   @override
   Future<MedicationModel> addMedication(CreateMedicationInput input) async {
-    final created = await _remoteDataSource.addMedication(input);
-    await _localDataSource.upsertCachedMedication(created);
-    return created;
+    try {
+      final created = await _remoteDataSource.addMedication(input);
+      await _localDataSource.upsertCachedMedication(created);
+      return created;
+    } catch (_) {
+      final created = MedicationModel(
+        id: await _localDataSource.nextLocalMedicationId(),
+        name: input.name,
+        dosage: input.dosage,
+        frequency: input.frequency,
+        time: input.time,
+        lastTaken: null,
+        nextDue: null,
+        critical: input.critical,
+      );
+      await _localDataSource.upsertCachedMedication(created);
+      return created;
+    }
   }
 
   @override
   Future<MedicationModel> markMedicationTaken(int id) async {
-    final updated = await _remoteDataSource.markMedicationTaken(id);
-    await _localDataSource.upsertCachedMedication(updated);
-    return updated;
+    try {
+      final updated = await _remoteDataSource.markMedicationTaken(id);
+      await _localDataSource.upsertCachedMedication(updated);
+      return updated;
+    } catch (_) {
+      final cached = await _localDataSource.fetchCachedMedications();
+      final target = cached.where((item) => item.id == id).firstOrNull;
+      if (target == null) {
+        rethrow;
+      }
+
+      final now = DateTime.now();
+      final hour = now.hour % 12 == 0 ? 12 : now.hour % 12;
+      final minute = now.minute.toString().padLeft(2, '0');
+      final period = now.hour >= 12 ? 'PM' : 'AM';
+      final updated = MedicationModel(
+        id: target.id,
+        name: target.name,
+        dosage: target.dosage,
+        frequency: target.frequency,
+        time: target.time,
+        lastTaken: '$hour:$minute $period - You',
+        nextDue: target.nextDue,
+        critical: target.critical,
+      );
+      await _localDataSource.upsertCachedMedication(updated);
+      return updated;
+    }
   }
 
   @override
   Future<void> removeMedication(int id) async {
-    await _remoteDataSource.removeMedication(id);
-    await _localDataSource.deleteCachedMedication(id);
+    try {
+      await _remoteDataSource.removeMedication(id);
+    } finally {
+      await _localDataSource.deleteCachedMedication(id);
+    }
   }
 }

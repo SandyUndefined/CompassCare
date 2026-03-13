@@ -1,3 +1,4 @@
+import 'package:compasscare_flutter/core/data/bundled_care_data.dart';
 import 'package:compasscare_flutter/features/documents/data/datasources/document_local_data_source.dart';
 import 'package:compasscare_flutter/features/documents/data/datasources/document_remote_data_source.dart';
 import 'package:compasscare_flutter/features/documents/domain/repositories/documents_repository.dart';
@@ -31,7 +32,11 @@ class DocumentsRepositoryImpl implements DocumentsRepository {
         );
       }
 
-      rethrow;
+      await _localDataSource.replaceCachedDocuments(BundledCareData.documents);
+      return const DocumentsFetchResult(
+        documents: BundledCareData.documents,
+        origin: DocumentDataOrigin.cache,
+      );
     }
   }
 }

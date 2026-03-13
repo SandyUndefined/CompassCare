@@ -55,4 +55,12 @@ class MedicationLocalDataSource {
     final db = await _database.open();
     await db.delete(_tableName, where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<int> nextLocalMedicationId() async {
+    final db = await _database.open();
+    final result = await db.rawQuery(
+      'SELECT COALESCE(MAX(id), 99999) + 1 AS next_id FROM $_tableName',
+    );
+    return (result.first['next_id'] as int?) ?? 100000;
+  }
 }
