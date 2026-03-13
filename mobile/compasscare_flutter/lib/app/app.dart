@@ -61,6 +61,7 @@ class CompassCareApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<AppConfig>.value(value: config),
         RepositoryProvider<ApiClient>(
           create: (_) => apiClient,
           dispose: (client) => client.close(),

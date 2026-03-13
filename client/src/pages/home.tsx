@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import type { CareTeamMember } from "@shared/schema";
 import { CompassLogo } from "@/components/compass-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -9,6 +9,7 @@ import { DocumentsTab } from "@/components/documents-tab";
 import { CareTeamTab } from "@/components/care-team-tab";
 import { ShoppingTab } from "@/components/shopping-tab";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Pill, Calendar, FileText, Users, ShoppingBag } from "lucide-react";
 
@@ -100,6 +101,13 @@ export default function Home() {
             <ShoppingTab />
           </TabsContent>
         </Tabs>
+
+        <footer className="mt-10 flex flex-col gap-3 border-t pt-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>CompassCare helps families organize caregiving information in one place.</p>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/privacy-policy">Privacy Policy</Link>
+          </Button>
+        </footer>
       </main>
     </div>
   );

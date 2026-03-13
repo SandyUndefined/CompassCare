@@ -1,3 +1,4 @@
+import 'package:compasscare_flutter/core/config/app_config.dart';
 import 'package:compasscare_flutter/features/appointments/presentation/pages/appointments_page.dart';
 import 'package:compasscare_flutter/features/care_team/data/models/care_team_member_model.dart';
 import 'package:compasscare_flutter/features/care_team/presentation/pages/care_team_page.dart';
@@ -10,6 +11,7 @@ import 'package:compasscare_flutter/features/theme/presentation/cubit/theme_cubi
 import 'package:dot_navigation_bar/dot_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AppShellPage extends StatefulWidget {
   const AppShellPage({super.key});
@@ -28,6 +30,31 @@ class _AppShellPageState extends State<AppShellPage> {
       }
       context.read<ShellHeaderCubit>().load();
     });
+  }
+
+  Future<void> _openPrivacyPolicy() async {
+    final privacyPolicyUrl = context.read<AppConfig>().privacyPolicyUrl;
+    final uri = Uri.tryParse(privacyPolicyUrl);
+
+    if (uri == null) {
+      _showNotice('Privacy policy link is unavailable right now.');
+      return;
+    }
+
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && mounted) {
+      _showNotice('Unable to open the privacy policy right now.');
+    }
+  }
+
+  void _showNotice(String message) {
+    if (!mounted) {
+      return;
+    }
+
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -78,6 +105,20 @@ class _AppShellPageState extends State<AppShellPage> {
                     icon: Icon(isLight ? Icons.dark_mode : Icons.light_mode),
                   );
                 },
+              ),
+              PopupMenuButton<_AppMenuAction>(
+                onSelected: (action) {
+                  switch (action) {
+                    case _AppMenuAction.privacyPolicy:
+                      _openPrivacyPolicy();
+                  }
+                },
+                itemBuilder: (context) => const [
+                  PopupMenuItem<_AppMenuAction>(
+                    value: _AppMenuAction.privacyPolicy,
+                    child: Text('Privacy Policy'),
+                  ),
+                ],
               ),
             ],
           ),
@@ -157,6 +198,8 @@ class _AppShellPageState extends State<AppShellPage> {
     ),
   ];
 }
+
+enum _AppMenuAction { privacyPolicy }
 
 class _ShellTab {
   const _ShellTab({

@@ -10,4 +10,7 @@ class AppConfig {
 
   String get appName => 'CompassCare';
   String get apiBaseUrl => _configuredApiBaseUrl;
+
+  String get privacyPolicyUrl =>
+      Uri.parse(apiBaseUrl).resolve('/privacy-policy').toString();
 }
