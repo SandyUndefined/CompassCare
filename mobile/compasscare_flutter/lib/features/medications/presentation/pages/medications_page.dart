@@ -252,6 +252,7 @@ class _AddMedicationSheetState extends State<_AddMedicationSheet> {
   final _timeController = TextEditingController();
   String _frequency = _frequencies.first;
   bool _critical = false;
+  TimeOfDay? _selectedTime;
 
   static const List<String> _frequencies = [
     'Once daily',
@@ -329,7 +330,7 @@ class _AddMedicationSheetState extends State<_AddMedicationSheet> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: _frequency,
+                  initialValue: _frequency,
                   decoration: const InputDecoration(labelText: 'Frequency'),
                   items: _frequencies
                       .map(
@@ -351,9 +352,12 @@ class _AddMedicationSheetState extends State<_AddMedicationSheet> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _timeController,
+                  readOnly: true,
+                  onTap: _pickTime,
                   decoration: const InputDecoration(
                     labelText: 'Time',
-                    hintText: 'e.g. 8:00 AM',
+                    hintText: 'Select time',
+                    suffixIcon: Icon(Icons.schedule_outlined),
                   ),
                   validator: (value) {
                     if ((value ?? '').trim().isEmpty) {
@@ -397,6 +401,28 @@ class _AddMedicationSheetState extends State<_AddMedicationSheet> {
         ),
       ),
     );
+  }
+
+  Future<void> _pickTime() async {
+    FocusScope.of(context).unfocus();
+
+    final selectedTime = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime ?? TimeOfDay.now(),
+    );
+
+    if (selectedTime == null || !mounted) {
+      return;
+    }
+
+    setState(() {
+      _selectedTime = selectedTime;
+      _timeController.text = MaterialLocalizations.of(context).formatTimeOfDay(
+        selectedTime,
+        alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
+      );
+    });
+    _formKey.currentState?.validate();
   }
 
   void _submit() {

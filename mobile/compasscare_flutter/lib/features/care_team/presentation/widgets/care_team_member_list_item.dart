@@ -66,10 +66,10 @@ class CareTeamMemberListItem extends StatelessWidget {
                 ],
               ),
             ),
-            TextButton.icon(
+            IconButton(
               onPressed: null,
+              tooltip: 'Message',
               icon: const Icon(Icons.message_outlined),
-              label: const Text('Message'),
             ),
           ],
         ),

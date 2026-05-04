@@ -1,5 +1,8 @@
 import 'package:equatable/equatable.dart';
 
+const compassCareAmazonStoreUrl =
+    'https://www.amazon.com/shop/profile/amzn1.account.AFTX5PT2EFQFNPZ2JKPI5EQVVSJQ/list/I3EWL8ZC90V4?ref_=cm_sw_r_cp_ud_aipsflist_2RH8YX61303FZ9NTN55X&ccs_id=be71c7ea-9d4d-4ac5-99b7-51b638ba32ea';
+
 class ShoppingLink extends Equatable {
   const ShoppingLink({
     required this.id,

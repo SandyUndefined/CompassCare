@@ -6,6 +6,9 @@ import 'package:compasscare_flutter/features/appointments/data/datasources/appoi
 import 'package:compasscare_flutter/features/appointments/data/datasources/appointment_remote_data_source.dart';
 import 'package:compasscare_flutter/features/appointments/data/repositories/appointments_repository_impl.dart';
 import 'package:compasscare_flutter/features/appointments/domain/repositories/appointments_repository.dart';
+import 'package:compasscare_flutter/features/auth/domain/repositories/auth_repository.dart';
+import 'package:compasscare_flutter/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:compasscare_flutter/features/auth/presentation/pages/auth_gate.dart';
 import 'package:compasscare_flutter/features/care_team/data/datasources/care_team_local_data_source.dart';
 import 'package:compasscare_flutter/features/care_team/data/datasources/care_team_remote_data_source.dart';
 import 'package:compasscare_flutter/features/care_team/data/repositories/care_team_repository_impl.dart';
@@ -23,7 +26,6 @@ import 'package:compasscare_flutter/features/shopping/data/repositories/shopping
 import 'package:compasscare_flutter/features/shopping/domain/repositories/shopping_repository.dart';
 import 'package:compasscare_flutter/features/shell/presentation/cubit/shell_cubit.dart';
 import 'package:compasscare_flutter/features/shell/presentation/cubit/shell_header_cubit.dart';
-import 'package:compasscare_flutter/features/shell/presentation/pages/app_shell_page.dart';
 import 'package:compasscare_flutter/features/theme/presentation/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,6 +37,7 @@ class CompassCareApp extends StatelessWidget {
     required this.config,
     required this.apiClient,
     required this.database,
+    required this.authRepository,
     this.medicationsRepository,
     this.appointmentsRepository,
     this.documentsRepository,
@@ -48,6 +51,7 @@ class CompassCareApp extends StatelessWidget {
   final AppConfig config;
   final ApiClient apiClient;
   final AppDatabase database;
+  final AuthRepository authRepository;
   final MedicationsRepository? medicationsRepository;
   final AppointmentsRepository? appointmentsRepository;
   final DocumentsRepository? documentsRepository;
@@ -72,6 +76,7 @@ class CompassCareApp extends StatelessWidget {
             db.close();
           },
         ),
+        RepositoryProvider<AuthRepository>.value(value: authRepository),
         if (medicationsRepository == null)
           RepositoryProvider<MedicationRemoteDataSource>(
             create: (context) => MedicationRemoteDataSource(
@@ -174,6 +179,11 @@ class CompassCareApp extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(create: (_) => ThemeCubit()),
+          BlocProvider(
+            create: (context) =>
+                AuthCubit(repository: context.read<AuthRepository>())
+                  ..restoreSession(),
+          ),
           BlocProvider(create: (_) => ShellCubit()),
           BlocProvider(
             create: (context) => ShellHeaderCubit(
@@ -187,8 +197,11 @@ class CompassCareApp extends StatelessWidget {
             final shortestSide = MediaQuery.sizeOf(context).shortestSide;
             final splashLogoSize = (shortestSide * 0.38).clamp(120.0, 180.0);
             final startupScreen = enableOnboardingScreen
-                ? OnboardingPage(onCompleted: onOnboardingCompleted)
-                : const AppShellPage();
+                ? OnboardingPage(
+                    onCompleted: onOnboardingCompleted,
+                    nextPageBuilder: (_) => const AuthGate(),
+                  )
+                : const AuthGate();
             return MaterialApp(
               title: config.appName,
               debugShowCheckedModeBanner: false,

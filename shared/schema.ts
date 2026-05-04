@@ -1,6 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, boolean, integer, timestamp } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
+import { pgTable, text, varchar, boolean, integer } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
 export const users = pgTable("users", {
@@ -46,25 +45,42 @@ export const documents = pgTable("documents", {
   type: text("type").notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+export const insertUserSchema = z.object({
+  username: z.string(),
+  password: z.string(),
 });
 
-export const insertMedicationSchema = createInsertSchema(medications).omit({
-  id: true,
+export const insertMedicationSchema = z.object({
+  name: z.string(),
+  dosage: z.string(),
+  frequency: z.string(),
+  time: z.string(),
+  lastTaken: z.string().nullable().optional(),
+  nextDue: z.string().nullable().optional(),
+  critical: z.boolean().optional().default(false),
 });
 
-export const insertAppointmentSchema = createInsertSchema(appointments).omit({
-  id: true,
+export const insertAppointmentSchema = z.object({
+  type: z.string(),
+  doctor: z.string(),
+  date: z.string(),
+  time: z.string(),
+  location: z.string(),
+  assignedTo: z.string(),
+  notes: z.string().nullable().optional(),
 });
 
-export const insertCareTeamMemberSchema = createInsertSchema(careTeamMembers).omit({
-  id: true,
+export const insertCareTeamMemberSchema = z.object({
+  name: z.string(),
+  role: z.string(),
+  online: z.boolean().optional().default(false),
+  lastActive: z.string().nullable().optional(),
 });
 
-export const insertDocumentSchema = createInsertSchema(documents).omit({
-  id: true,
+export const insertDocumentSchema = z.object({
+  name: z.string(),
+  date: z.string(),
+  type: z.string(),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

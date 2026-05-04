@@ -1,3 +1,4 @@
+import 'package:compasscare_flutter/features/documents/data/models/document_model.dart';
 import 'package:compasscare_flutter/features/documents/domain/repositories/documents_repository.dart';
 import 'package:compasscare_flutter/features/documents/presentation/bloc/documents_bloc.dart';
 import 'package:compasscare_flutter/features/documents/presentation/widgets/document_list_item.dart';
@@ -105,7 +106,10 @@ class _DocumentsView extends StatelessWidget {
                 ...state.documents.map(
                   (document) => Padding(
                     padding: const EdgeInsets.only(bottom: 10),
-                    child: DocumentListItem(document: document),
+                    child: DocumentListItem(
+                      document: document,
+                      onTap: () => _openDocumentPreview(context, document),
+                    ),
                   ),
                 ),
             ],
@@ -113,6 +117,126 @@ class _DocumentsView extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _openDocumentPreview(BuildContext context, DocumentModel document) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _DocumentPreviewSheet(document: document),
+    );
+  }
+}
+
+class _DocumentPreviewSheet extends StatelessWidget {
+  const _DocumentPreviewSheet({required this.document});
+
+  final DocumentModel document;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final mediaQuery = MediaQuery.of(context);
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          20,
+          16,
+          20,
+          mediaQuery.viewInsets.bottom + 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    document.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleLarge,
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Close',
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              constraints: const BoxConstraints(minHeight: 300),
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: colorScheme.outlineVariant),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    _iconForType(document.type),
+                    size: 52,
+                    color: colorScheme.primary,
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    document.type.toString().toUpperCase(),
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    document.date,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  Text(
+                    'Preview source is not attached yet.',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'The app currently receives document metadata only. Add a file URL or uploaded asset to render the full document here.',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _iconForType(String type) {
+    switch (type.toUpperCase()) {
+      case 'PDF':
+        return Icons.picture_as_pdf_outlined;
+      case 'CSV':
+      case 'XLSX':
+        return Icons.table_chart_outlined;
+      case 'PNG':
+      case 'JPG':
+      case 'JPEG':
+        return Icons.image_outlined;
+      default:
+        return Icons.insert_drive_file_outlined;
+    }
   }
 }
 

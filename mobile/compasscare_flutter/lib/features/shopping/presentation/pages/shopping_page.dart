@@ -348,13 +348,13 @@ class _MedicationSuggestionCard extends StatelessWidget {
         id: 'recommend-pill-organizer',
         title: 'Weekly Pill Organizer',
         subtitle: _subtitleForMeds(medicationNames),
-        url: 'https://www.amazon.com/s?k=weekly+pill+organizer',
+        url: compassCareAmazonStoreUrl,
       ),
       const ShoppingLink(
         id: 'recommend-pill-reminder',
         title: 'Medication Reminder Timer',
         subtitle: 'Never miss a dose with audio alerts',
-        url: 'https://www.amazon.com/s?k=pill+reminder+alarm',
+        url: compassCareAmazonStoreUrl,
       ),
     ];
 

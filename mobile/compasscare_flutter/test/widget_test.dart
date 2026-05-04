@@ -6,6 +6,8 @@ import 'package:compasscare_flutter/features/care_team/data/models/care_team_mem
 import 'package:compasscare_flutter/features/care_team/domain/repositories/care_team_repository.dart';
 import 'package:compasscare_flutter/core/network/api_client.dart';
 import 'package:compasscare_flutter/core/storage/app_database.dart';
+import 'package:compasscare_flutter/features/auth/data/models/auth_user_model.dart';
+import 'package:compasscare_flutter/features/auth/domain/repositories/auth_repository.dart';
 import 'package:compasscare_flutter/features/documents/data/models/document_model.dart';
 import 'package:compasscare_flutter/features/documents/domain/repositories/documents_repository.dart';
 import 'package:compasscare_flutter/features/medications/data/models/medication_model.dart';
@@ -25,6 +27,7 @@ void main() {
         config: const AppConfig(),
         apiClient: ApiClient(baseUrl: const AppConfig().apiBaseUrl),
         database: AppDatabase(),
+        authRepository: _FakeAuthRepository(),
         medicationsRepository: _FakeMedicationsRepository(),
         appointmentsRepository: _FakeAppointmentsRepository(),
         documentsRepository: _FakeDocumentsRepository(),
@@ -60,6 +63,7 @@ void main() {
         config: const AppConfig(),
         apiClient: ApiClient(baseUrl: const AppConfig().apiBaseUrl),
         database: AppDatabase(),
+        authRepository: _FakeAuthRepository(),
         medicationsRepository: _FakeMedicationsRepository(),
         appointmentsRepository: _FakeAppointmentsRepository(),
         documentsRepository: _FakeDocumentsRepository(),
@@ -90,14 +94,14 @@ void main() {
         of: find.byType(DotNavigationBar),
         matching: find.byIcon(Icons.folder_open_outlined),
       ),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.descendant(
         of: find.byType(DotNavigationBar),
         matching: find.byIcon(Icons.groups_outlined),
       ),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.descendant(
@@ -106,7 +110,13 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.byKey(const Key('header-team-avatar-1')), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(DotNavigationBar),
+        matching: find.byIcon(Icons.person_outline),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('opens shopping tab and renders shopping content', (
@@ -117,6 +127,7 @@ void main() {
         config: const AppConfig(),
         apiClient: ApiClient(baseUrl: const AppConfig().apiBaseUrl),
         database: AppDatabase(),
+        authRepository: _FakeAuthRepository(),
         medicationsRepository: _FakeMedicationsRepository(),
         appointmentsRepository: _FakeAppointmentsRepository(),
         documentsRepository: _FakeDocumentsRepository(),
@@ -137,6 +148,43 @@ void main() {
     expect(find.text('Care Supplies & Medications'), findsOneWidget);
     expect(find.text('Shop by Category'), findsOneWidget);
   });
+}
+
+class _FakeAuthRepository implements AuthRepository {
+  static const _user = AuthUserModel(
+    id: 'user-1',
+    name: 'Test User',
+    email: 'test@example.com',
+  );
+
+  @override
+  String? get currentToken => 'test-token';
+
+  @override
+  AuthUserModel? restoreUser() => _user;
+
+  @override
+  Future<AuthUserModel> login({
+    required String email,
+    required String password,
+  }) async {
+    return _user;
+  }
+
+  @override
+  Future<void> logout() async {}
+
+  @override
+  Future<void> deleteAccount() async {}
+
+  @override
+  Future<AuthUserModel> register({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    return _user;
+  }
 }
 
 class _FakeMedicationsRepository implements MedicationsRepository {

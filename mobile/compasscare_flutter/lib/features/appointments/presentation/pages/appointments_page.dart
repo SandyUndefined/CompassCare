@@ -250,6 +250,8 @@ class _AddAppointmentSheetState extends State<_AddAppointmentSheet> {
   final _locationController = TextEditingController();
   final _assignedToController = TextEditingController();
   final _notesController = TextEditingController();
+  DateTime? _selectedDate;
+  TimeOfDay? _selectedTime;
 
   @override
   void dispose() {
@@ -324,10 +326,12 @@ class _AddAppointmentSheetState extends State<_AddAppointmentSheet> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _dateController,
-                  textInputAction: TextInputAction.next,
+                  readOnly: true,
+                  onTap: _pickDate,
                   decoration: const InputDecoration(
                     labelText: 'Date',
-                    hintText: 'e.g. Mar 10, 2026',
+                    hintText: 'Select date',
+                    suffixIcon: Icon(Icons.calendar_month_outlined),
                   ),
                   validator: (value) {
                     if ((value ?? '').trim().isEmpty) {
@@ -339,11 +343,19 @@ class _AddAppointmentSheetState extends State<_AddAppointmentSheet> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _timeController,
-                  textInputAction: TextInputAction.next,
+                  readOnly: true,
+                  onTap: _pickTime,
                   decoration: const InputDecoration(
                     labelText: 'Time',
-                    hintText: 'e.g. 2:30 PM',
+                    hintText: 'Select time',
+                    suffixIcon: Icon(Icons.schedule_outlined),
                   ),
+                  validator: (value) {
+                    if ((value ?? '').trim().isEmpty) {
+                      return 'Time is required.';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -397,6 +409,52 @@ class _AddAppointmentSheetState extends State<_AddAppointmentSheet> {
         ),
       ),
     );
+  }
+
+  Future<void> _pickDate() async {
+    FocusScope.of(context).unfocus();
+
+    final now = DateTime.now();
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? now,
+      firstDate: DateTime(now.year - 1),
+      lastDate: DateTime(now.year + 5),
+    );
+
+    if (selectedDate == null || !mounted) {
+      return;
+    }
+
+    setState(() {
+      _selectedDate = selectedDate;
+      _dateController.text = MaterialLocalizations.of(
+        context,
+      ).formatMediumDate(selectedDate);
+    });
+    _formKey.currentState?.validate();
+  }
+
+  Future<void> _pickTime() async {
+    FocusScope.of(context).unfocus();
+
+    final selectedTime = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime ?? TimeOfDay.now(),
+    );
+
+    if (selectedTime == null || !mounted) {
+      return;
+    }
+
+    setState(() {
+      _selectedTime = selectedTime;
+      _timeController.text = MaterialLocalizations.of(context).formatTimeOfDay(
+        selectedTime,
+        alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
+      );
+    });
+    _formKey.currentState?.validate();
   }
 
   void _submit() {

@@ -16,16 +16,31 @@ class AppointmentListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    Icons.calendar_month_outlined,
+                    color: colorScheme.onSecondaryContainer,
+                  ),
+                ),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,7 +53,7 @@ class AppointmentListItem extends StatelessWidget {
                       Text(
                         appointment.doctor,
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -51,7 +66,7 @@ class AppointmentListItem extends StatelessWidget {
                     Text(
                       appointment.date,
                       style: theme.textTheme.labelLarge?.copyWith(
-                        color: theme.colorScheme.primary,
+                        color: colorScheme.primary,
                       ),
                     ),
                     if (appointment.time.trim().isNotEmpty)
@@ -112,14 +127,21 @@ class AppointmentListItem extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: TextButton.icon(
                 onPressed: isRemoving ? null : onRemove,
-                icon: isRemoving
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.delete_outline),
-                label: Text(isRemoving ? 'Removing...' : 'Remove'),
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: isRemoving
+                      ? const SizedBox(
+                          key: ValueKey('removing'),
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(
+                          Icons.delete_outline,
+                          key: ValueKey('remove'),
+                        ),
+                ),
+                label: Text(isRemoving ? 'Removing' : 'Remove'),
               ),
             ),
           ],

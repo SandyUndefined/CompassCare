@@ -14,13 +14,13 @@ class ShoppingRepositoryImpl implements ShoppingRepository {
       id: 'featured-medication-supplies',
       title: 'Medication Supplies',
       subtitle: 'Pill organizers, dispensers, reminders',
-      url: 'https://www.amazon.com/s?k=medication+organizer',
+      url: compassCareAmazonStoreUrl,
     ),
     ShoppingLink(
       id: 'featured-health-monitoring',
       title: 'Health Monitoring',
       subtitle: 'Blood pressure monitors, thermometers, scales',
-      url: 'https://www.amazon.com/s?k=home+health+care+supplies',
+      url: compassCareAmazonStoreUrl,
     ),
   ];
 
@@ -29,31 +29,31 @@ class ShoppingRepositoryImpl implements ShoppingRepository {
       id: 'category-daily-living-aids',
       title: 'Daily Living Aids',
       subtitle: 'Grab bars, shower chairs, reachers',
-      url: 'https://www.amazon.com/s?k=daily+living+aids+elderly',
+      url: compassCareAmazonStoreUrl,
     ),
     ShoppingLink(
       id: 'category-mobility',
       title: 'Mobility',
       subtitle: 'Walkers, canes, wheelchairs',
-      url: 'https://www.amazon.com/s?k=mobility+aids+walker+cane',
+      url: compassCareAmazonStoreUrl,
     ),
     ShoppingLink(
       id: 'category-medical-supplies',
       title: 'Medical Supplies',
       subtitle: 'Bandages, gauze, medical tape',
-      url: 'https://www.amazon.com/s?k=medical+supplies+first+aid',
+      url: compassCareAmazonStoreUrl,
     ),
     ShoppingLink(
       id: 'category-nutrition',
       title: 'Nutrition',
       subtitle: 'Supplements, protein shakes, meal replacements',
-      url: 'https://www.amazon.com/s?k=senior+nutrition+supplements',
+      url: compassCareAmazonStoreUrl,
     ),
     ShoppingLink(
       id: 'category-safety-comfort',
       title: 'Safety & Comfort',
       subtitle: 'Bed rails, non-slip mats, cushions',
-      url: 'https://www.amazon.com/s?k=home+safety+elderly+comfort',
+      url: compassCareAmazonStoreUrl,
     ),
   ];
 

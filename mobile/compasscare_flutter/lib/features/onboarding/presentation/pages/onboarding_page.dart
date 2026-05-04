@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 class OnboardingPage extends StatelessWidget {
-  const OnboardingPage({super.key, this.onCompleted});
+  const OnboardingPage({super.key, this.onCompleted, this.nextPageBuilder});
 
   final Future<void> Function()? onCompleted;
+  final WidgetBuilder? nextPageBuilder;
 
   Future<void> _completeOnboarding(BuildContext context) async {
     if (onCompleted != null) {
@@ -17,7 +18,10 @@ class OnboardingPage extends StatelessWidget {
 
   void _openAppShell(BuildContext context) {
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute<void>(builder: (_) => const AppShellPage()),
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            nextPageBuilder?.call(context) ?? const AppShellPage(),
+      ),
       (route) => false,
     );
   }
